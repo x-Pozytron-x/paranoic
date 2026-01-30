@@ -1,0 +1,9 @@
+{
+  "sources": [
+    "D:/Data"
+  ],
+  "mirror_dir": "E:/ParanoicMirror",
+  "snapshots_dir": "E:/ParanoicSnapshots",
+  "archive_dir": "F:/MegaBackups",
+  "password": "CHANGE_ME"
+}
