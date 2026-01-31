@@ -2,12 +2,12 @@ import os
 import py7zr
 from datetime import datetime
 
-def archive_snapshot(snapshot_path, archive_dir, password):
+def archive_snapshot(snapshot_path, archive_dir, password, log):
   date = datetime.now().strftime("%Y-%m-%d")
   archive_name = f"paranoic-backup-{date}.7z"
   archive_path = os.path.join(archive_dir, archive_name)
 
-  print(f"[+] Creating archive: {archive_path}")
+  log("[*] Creating archive...")
 
   os.makedirs(archive_dir, exist_ok=True)
 
@@ -18,4 +18,4 @@ def archive_snapshot(snapshot_path, archive_dir, password):
   ) as archive:
     archive.writeall(snapshot_path, arcname=os.path.basename(snapshot_path))
 
-  print("[✓] Archive created")
+  log("[✓] Archive created")

@@ -7,9 +7,10 @@ RETRY_COUNT = 5
 RETRY_DELAY = 0.5  # сек
 
 class SyncHandler(FileSystemEventHandler):
-  def __init__(self, src_root, dst_root):
-    self.src_root = src_root
-    self.dst_root = dst_root
+  def __init__(self, src, dst, log):
+    self.src_root = src
+    self.dst_root = dst
+    self.log = log
 
   def _map_path(self, path):
     rel = os.path.relpath(path, self.src_root)

@@ -29,7 +29,7 @@ def sync_dir(src, dst):
       if not os.path.exists(src_file):
         os.remove(dst_file)
 
-def sync_sources_to_mirror(sources, mirror_dir):
+def sync_sources_to_mirror(sources, mirror_dir, log):
   print("[*] Incremental sync started")
 
   os.makedirs(mirror_dir, exist_ok=True)
@@ -42,9 +42,9 @@ def sync_sources_to_mirror(sources, mirror_dir):
     folder_name = os.path.basename(src.rstrip("\\/"))
     dst = os.path.join(mirror_dir, folder_name)
 
-    print(f"[+] Syncing {src} → {dst}")
+    log(f"  syncing: {src}")
     os.makedirs(dst, exist_ok=True)
 
     sync_dir(src, dst)
 
-  print("[✓] Incremental sync finished")
+  log("[*] Initial sync finished")
