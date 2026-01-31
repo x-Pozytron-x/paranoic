@@ -120,10 +120,6 @@ class ParanoicApp:
     self.config["archive_dir"] = self.archive_var.get()
     self._save_config()
 
-  # def _save_config(self):
-  #   with open(CONFIG_PATH, "w", encoding="utf-8") as f:
-  #     json.dump(self.config, f, indent=2)
-
   # ---------------- PROCESS ----------------
 
   def start_backup(self):
@@ -131,7 +127,9 @@ class ParanoicApp:
       messagebox.showwarning("Paranoic", "Backup already running")
       return
 
-    self._save_all()
+    #self._save_all()
+    if os.path.exists("stop.flag"):
+      os.remove("stop.flag")
 
     self.process = subprocess.Popen(
       ["python", "main.py"],
@@ -140,7 +138,14 @@ class ParanoicApp:
 
   def stop_backup(self):
     if not self.process:
+      messagebox.showinfo("Paranoic", "Backup is not running")
       return
+      
+    with open("stop.flag", "w"):
+      pass
 
-    self.process.terminate()
+    messagebox.showinfo(
+      "Paranoic",
+      "Stopping backup...\nSnapshot and archive will be created."
+    )
     self.process = None

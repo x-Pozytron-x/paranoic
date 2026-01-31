@@ -1,25 +1,30 @@
 import json
+import os
+import time
+
+from watchdog.observers import Observer
+
 from core.sync import sync_sources_to_mirror
 from core.snapshot import create_snapshot
 from core.archive import archive_snapshot
-
-from watchdog.observers import Observer
 from core.watch import SyncHandler
-import time
-import os
 
+
+STOP_FILE = "stop.flag"
 
 print("=== Paranoic backup started ===")
 
+# -------- Load config --------
 with open("config.json", "r", encoding="utf-8") as f:
   config = json.load(f)
 
+# -------- Initial sync --------
 sync_sources_to_mirror(
   config["sources"],
   config["mirror_dir"]
 )
 
-
+# -------- Realtime observers --------
 observers = []
 
 for src in config["sources"]:
@@ -33,26 +38,37 @@ for src in config["sources"]:
 
   observers.append(observer)
 
-print("[*] Realtime sync active. Press Ctrl+C to stop.")
+print("[*] Realtime sync active")
 
+# -------- Main loop --------
 try:
   while True:
+    if os.path.exists(STOP_FILE):
+      print("[*] Stop signal received")
+      os.remove(STOP_FILE)
+      break
     time.sleep(1)
-except KeyboardInterrupt:
-  print("\n[*] Stopping sync...")
+
+finally:
+  print("[*] Stopping sync...")
+
   for obs in observers:
     obs.stop()
+
+  for obs in observers:
     obs.join()
 
-snapshot_path = create_snapshot(
-  config["mirror_dir"],
-  config["snapshots_dir"]
-)
+  # -------- Snapshot --------
+  snapshot_path = create_snapshot(
+    config["mirror_dir"],
+    config["snapshots_dir"]
+  )
 
-archive_snapshot(
-  snapshot_path,
-  config["archive_dir"],
-  config["password"]
-)
+  # -------- Archive --------
+  archive_snapshot(
+    snapshot_path,
+    config["archive_dir"],
+    config["password"]
+  )
 
-print("=== Paranoic backup finished ===")
+  print("=== Paranoic backup finished ===")
