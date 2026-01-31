@@ -16,7 +16,7 @@ class ParanoicApp:
   def __init__(self):
     self.root = tk.Tk()
     self.root.title("Paranoic Backup")
-    self.root.geometry("700x620")
+    self.root.geometry("400x650")
 
     self.log_queue = queue.Queue()
     self.process_thread = None
@@ -70,7 +70,12 @@ class ParanoicApp:
     for src in self.config["sources"]:
       self.sources_list.insert(tk.END, src)
 
-    tk.Button(frame, text="+ Add folder", command=self.add_source).pack(anchor="w", pady=5)
+    src_btns = tk.Frame(frame)
+    src_btns.pack(anchor="w", pady=5)
+
+    tk.Button(src_btns, text="+ Add folder", command=self.add_source).pack(side="left")
+    tk.Button(src_btns, text="− Remove selected", command=self.remove_source).pack(side="left", padx=5)
+
 
     # ---- Directories ----
     self.mirror_var = tk.StringVar(value=self.config["mirror_dir"])
@@ -161,6 +166,26 @@ class ParanoicApp:
       self.sources_list.insert(tk.END, path)
       self._save_config()
 
+  def remove_source(self):
+    selection = self.sources_list.curselection()
+    if not selection:
+      self.log("⚠ No source selected")
+      return
+
+    index = selection[0]
+    path = self.sources_list.get(index)
+
+    # удаляем из конфига
+    if path in self.config["sources"]:
+      self.config["sources"].remove(path)
+
+    # удаляем из UI
+    self.sources_list.delete(index)
+
+    self._save_config()
+    self.log(f"🗑 Removed source: {path}")
+
+
   # ===================== PROCESS =====================
 
   def start_backup(self):
@@ -198,4 +223,5 @@ class ParanoicApp:
 
 if __name__ == "__main__":
   ParanoicApp().run()
+ 
  
