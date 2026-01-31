@@ -20,6 +20,7 @@ def run_backup(log):
   sync_sources_to_mirror(
     config["sources"],
     config["mirror_dir"],
+    config["exclude"],
     log
   )
 
@@ -29,7 +30,12 @@ def run_backup(log):
     folder = os.path.basename(src.rstrip("\\/"))
     dst = os.path.join(config["mirror_dir"], folder)
 
-    handler = SyncHandler(src, dst, log)
+    handler = SyncHandler(
+      src,
+      dst,
+      log,
+      config.get("exclude", [])
+    )
     observer = Observer()
     observer.schedule(handler, src, recursive=True)
     observer.start()

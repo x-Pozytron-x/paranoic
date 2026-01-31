@@ -16,7 +16,7 @@ class ParanoicApp:
   def __init__(self):
     self.root = tk.Tk()
     self.root.title("Paranoic Backup")
-    self.root.geometry("700x520")
+    self.root.geometry("700x620")
 
     self.log_queue = queue.Queue()
     self.process_thread = None
@@ -85,6 +85,13 @@ class ParanoicApp:
     tk.Label(frame, text="Password").pack(anchor="w", pady=(10, 0))
     self.password_var = tk.StringVar(value=self.config.get("password", ""))
     tk.Entry(frame, textvariable=self.password_var, show="*").pack(fill="x")
+
+    # ---- Exclude ----
+    tk.Label(frame, text="Exclude patterns").pack(anchor="w", pady=(10, 0))
+    self.exclude_box = tk.Text(frame, height=5)
+    self.exclude_box.pack(fill="x")
+    if "exclude" in self.config:
+      self.exclude_box.insert("1.0", "\n".join(self.config["exclude"]))
 
     # ---- Buttons ----
     btns = tk.Frame(frame)
